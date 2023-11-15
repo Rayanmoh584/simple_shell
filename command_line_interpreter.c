@@ -1,6 +1,6 @@
 #include "main.h"
 
-
+#define BUFFER_SIZE 1024
 int main(void) {
     char *line;
     size_t len = 0;
