@@ -1,0 +1,26 @@
+struct CMD {
+    int type ;
+};
+struct EXEC{
+    int type;
+    char eargv [maximumargs];
+    char *argv [maximumargs];
+};
+struct REDIR{
+    int type;
+    struct CMD *CMD;
+    char *file;
+    char *efile;
+    int mode;
+    int fd;
+};
+//pipe is not an allowed function that's why has been skipped.
+struct LIST{
+    int type;
+    struct CMD *left;
+    struct CMD *right;
+};
+struct BACK{
+    int type;
+    struct CMD *CMD;
+};
