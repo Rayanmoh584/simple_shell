@@ -1,18 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#define BUFFER_SIZE 1024
-
 int main(void) {
-    char *line;
-    size_t len = 0;
-
-    while (1) {
-        printf("#cisfun$ ");
+char *line;
+size_t len = 0;
+while (1) {
+printf("#shimple_shell$ ");
         if (getline(&line, &len, stdin) == -1) {
-            if (feof(stdin)) {
+if (feof(stdin)) {
                 printf("\n");
                 free(line);
                 exit(EXIT_SUCCESS);
@@ -23,7 +15,7 @@ int main(void) {
             }
         }
 
-        // remove the newline character at the end
+    
         line[strcspn(line, "\n")] = '\0';
 
         pid_t pid = fork();
@@ -32,13 +24,11 @@ int main(void) {
             perror("fork");
             exit(EXIT_FAILURE);
         } else if (pid == 0) {
-            // Child process
             if (execlp(line, line, (char *)NULL) == -1) {
                 perror("execlp");
                 exit(EXIT_FAILURE);
             }
         } else {
-            // parent process 
             wait(NULL);
         }
     }
