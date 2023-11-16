@@ -5,5 +5,5 @@
 #include <sys/wait.h>
 #include <string.h>
 
-#define MAX_COMMAND_LENGTH 100
-#define MAX_ARGUMENTS 10
+void execmd(char **argv);
+char *get_location(char *command);
