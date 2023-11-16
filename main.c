@@ -1,10 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <signal.h>
-
 #define MAX_LINE 80 // The maximum length of a command
 #define MAX_ARGS 10 // The maximum number of arguments
 
