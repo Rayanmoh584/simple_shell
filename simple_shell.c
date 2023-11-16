@@ -1,137 +1,42 @@
-#include "shell.h"
-
-
-/**
-
- * interactive - returns true if shell is interactive mode
-
- * @info: struct address
-
- *
-
- * Return: 1 if interactive mode, 0 otherwise
-
- */
-
-int interactive(info_t *info)
-
+int main(int ac, char **av)
 {
-
-        return (isatty(STDIN_FILENO) && info->readfd <= 2);
-
-}
-
-
-/**
-
- * is_delim - checks if character is a delimeter
-
- * @c: the char to check
-
- * @delim: the delimeter string
-
- * Return: 1 if true, 0 if false
-
- */
-
-int is_delim(char c, char *delim)
-
-{
-
-        while (*delim)
-
-                if (*delim++ == c)
-
-                        return (1);
-
-        return (0);
-
-}
-
-
-/**
-
- * _isalpha - checks for alphabetic character
-
- * @c: The character to input
-
- * Return: 1 if c is alphabetic, 0 otherwise
-
- */
-
-
-int _isalpha(int c)
-
-{
-
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-
-                return (1);
-
-        else
-
-                return (0);
-
-}
-
-
-/**
-
- * _atoi - converts a string to an integer
-
- * @s: the string to be converted
-
- * Return: 0 if no numbers in string, converted number otherwise
-
- */
-
-
-int _atoi(char *s)
-
-{
-
-        int i, sign = 1, flag = 0, output;
-
-        unsigned int result = 0;
-
-
-        for (i = 0; s[i] != '\0' && flag != 2; i++)
-
-        {
-
-                if (s[i] == '-')
-
-                        sign *= -1;
-
-
-                if (s[i] >= '0' && s[i] <= '9')
-
-                {
-
-                        flag = 1;
-
-                        result *= 10;
-
-                        result += (s[i] - '0');
-
-                }
-
-                else if (flag == 1)
-
-                        flag = 2;
-
-        }
-
-
-        if (sign == -1)
-
-                output = -result;
-
-        else
-
-                output = result;
-
-
-        return (output);
-
-}
+ if (ac == 2)
+  args.fd = open(av[1], O_RDONLY);
+
+ if (args.fd == -1)
+ {
+  print_error(&args);
+  exit(1);
+ }
+
+  while (1)
+ {
+    /*if interactive print the prompt (eg. myshell->)*/
+
+    if (interactive(ac))
+       write(STDOUT_FILENO, args.prompt, _strlen(args.prompt));
+
+  read_chars = _getline(&args.line, &size, args.fd);
+
+  /*EOF: enf of file or Ctrl + D*/
+  if (read_chars == -1)
+  {
+   free(args.line);
+   exit(0);
+  }
+
+  /* case of Empty line*/
+  if (read_chars == 1 && args.line[0] == '\n')
+  {
+   free(args.line);
+   continue;
+  }
+
+  /* normal cases */
+
+  args.line[read_chars - 1] = '\0';
+  remove_comments(&args);
+  make_commands(&args.commands, args.line);
+  variable_replacement(&args);
+  execute(&args);
+ }
