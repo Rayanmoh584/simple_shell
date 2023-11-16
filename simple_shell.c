@@ -1,4 +1,16 @@
-#define MAX_LINE 80 // The maximum length of a command
+#include "simple_shell.h"
+
+// A function to parse the input line into words and store them in an array
+void parse_line(char *line, char **args) {
+  int i = 0;
+  char *token = strtok(line, " \n"); // Split the line by spaces and newline
+  while (token != NULL && i < MAX_LINE) { // Loop until the end of the line or the maximum number of words
+    args[i] = token; // Store the token in the array
+    i++;
+    token = strtok(NULL, " \n"); // Get the next token
+  }
+  args[i] = NULL; // Terminate the array with a null pointer
+}
 
 // A function to handle the SIGINT signal (Ctrl-C)
 void sigint_handler(int sig) {
@@ -7,7 +19,7 @@ void sigint_handler(int sig) {
 
 int main(void) {
   char line[MAX_LINE]; // The input line
-  char *args[2]; // The command line arguments
+  char *args[MAX_LINE]; // The command line arguments
   int status; // The exit status of the child process
   char *environ[] = {NULL}; // The environment variables
 
@@ -27,8 +39,7 @@ int main(void) {
     } else if (line[0] == '\0') { // If the user entered an empty line, do nothing
       continue;
     } else { // Otherwise, execute the command
-      args[0] = line; // Store the command in the first argument
-      args[1] = NULL; // Terminate the argument array with a null pointer
+      parse_line(line, args); // Parse the input into words and store them in an array
       pid_t pid = fork(); // Fork a child process
       if (pid < 0) { // If the fork failed, print an error message and exit
         perror("Fork failed");
