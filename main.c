@@ -1,16 +1,44 @@
-#inlude "main.h"
-#define MAX_LINE 80 // The maximum length of a command
+#include "main.h"
+
+#define BUFFER_SIZE 1024
 int main(void) {
-  char line[MAX_LINE]; // The input line
-  while (1) { // Loop indefinitely
-    printf("$ "); // Print the prompt
-    fflush(stdout); // Flush the output buffer
-    fgets(line, MAX_LINE, stdin); // Read a line of input from the user
-    if (strcmp(line, "exit\n") == 0 || strcmp(line, "quit\n") == 0) { // If the user entered "exit" or "quit", exit the program
-      break;
-    } else { // Otherwise, print the input on the next line
-      printf("%s", line);
+    char *line;
+    size_t len = 0;
+
+    while (1) {
+        printf("#cisfun$ ");
+        if (getline(&line, &len, stdin) == -1) {
+            if (feof(stdin)) {
+                printf("\n");
+                free(line);
+                exit(EXIT_SUCCESS);
+            } else {
+                perror("getline");
+                free(line);
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        // remove the newline character at the end
+        line[strcspn(line, "\n")] = '\0';
+
+        pid_t pid = fork();
+
+        if (pid == -1) {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        } else if (pid == 0) {
+            // Child process
+            if (execlp(line, line, (char *)NULL) == -1) {
+                perror("execlp");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            // parent process 
+            wait(NULL);
+        }
     }
-  }
-  return 0;
+
+    free(line);
+    return 0;
 }
